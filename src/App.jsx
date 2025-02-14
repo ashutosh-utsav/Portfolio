@@ -65,9 +65,17 @@ const App = () => {
       <section className="projects">
         <h2>Projects</h2>
         <ul>
-          <li><a href="#">Library Management App</a></li>
-          <li><a href="#">Sales Forecasting ML Model</a></li>
-          <li><a href="#">Portfolio Website</a></li>
+          <li><a href="https://github.com/ashutosh-utsav/MAD2-Project-IITM-May-2024">Library Management App (Flask and Vue)</a></li>
+          <li><a href="https://github.com/ashutosh-utsav/Chat-Bot-Using-RAG">Chat Bot Using RAG</a></li>
+          <li><a href="https://github.com/ashutosh-utsav/Portfolio">Portfolio Website</a></li>
+        </ul>
+      </section>
+
+      {/* Projects Section */}
+      <section className="projects2">
+        <h2>Blogs</h2>
+        <ul>
+          <li><a href="#">Sample blog</a></li>
         </ul>
       </section>
 
