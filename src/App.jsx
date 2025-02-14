@@ -1,5 +1,5 @@
-import React from "react";
-import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
+import React from "react"
+import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa"
 
 const projects = [
   {
@@ -20,12 +20,12 @@ const projects = [
     tech: "React, CSS",
     link: "https://github.com/ashutosh-utsav/Portfolio",
   },
-];
+]
 
 const blogs = [
   { title: "Understanding RAG in AI", link: "#", summary: "Exploring Retrieval-Augmented Generation and its applications." },
   { title: "Vue.js vs React", link: "#", summary: "A comparison of Vue.js and React for modern web development." },
-];
+]
 
 const App = () => {
   return (
@@ -129,7 +129,7 @@ const App = () => {
         </div>
       </section>
     </div>
-  );
-};
+  )
+}
 
-export default App;
+export default App
