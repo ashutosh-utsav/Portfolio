@@ -91,6 +91,7 @@ const App = () => {
       {/* Projects Section */}
       <section className="projects">
         <h2>Projects</h2>
+        
         <div className="project-grid">
           {projects.map((project, index) => (
             <div key={index} className="project-card">
@@ -99,8 +100,10 @@ const App = () => {
               <small>{project.tech}</small>
               <a href={project.link} target="_blank" className="btn">View Project</a>
             </div>
+
           ))}
         </div>
+        
       </section>
 
       {/* Blogs Section */}
