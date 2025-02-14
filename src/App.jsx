@@ -5,13 +5,13 @@ const projects = [
   {
     title: "Library Management App",
     description: "A full-stack library management system built using Flask and Vue.js.",
-    tech: "Flask, Vue.js, PostgreSQL",
+    tech: "Flask, Vue.js, SQlite",
     link: "https://github.com/ashutosh-utsav/MAD2-Project-IITM-May-2024",
   },
   {
     title: "Chat Bot Using RAG",
     description: "An AI chatbot that utilizes Retrieval-Augmented Generation for intelligent responses.",
-    tech: "Python, LangChain, OpenAI API",
+    tech: "Python, LangChain, Gemini API",
     link: "https://github.com/ashutosh-utsav/Chat-Bot-Using-RAG",
   },
   {
@@ -91,7 +91,7 @@ const App = () => {
       {/* Projects Section */}
       <section className="projects">
         <h2>Projects</h2>
-        
+
         <div className="project-grid">
           {projects.map((project, index) => (
             <div key={index} className="project-card">
@@ -108,7 +108,7 @@ const App = () => {
 
       {/* Blogs Section */}
       <section className="blogs">
-        <h2>Blogs</h2>
+        <h2>New Blogs</h2>
         <div className="blog-list">
           {blogs.map((blog, index) => (
             <div key={index} className="blog-item">
