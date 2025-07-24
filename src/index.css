@@ -1,3 +1,4 @@
+@import "tailwindcss";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,4 +8,5 @@
     @apply bg-white dark:bg-[#0a0a0a] text-zinc-800 dark:text-zinc-200 font-sans transition-colors duration-300;
   }
 }
+
 
