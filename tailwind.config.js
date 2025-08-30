@@ -1,13 +1,11 @@
-/** @type {import('tailwindcss').Config} */
-export default {
-  darkMode: 'class', // This is the magic line that enables the toggle
-
+// tailwind.config.js
+module.exports = {
   content: [
     "./index.html",
-    "./src/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}", // or whatever your path is
   ],
   theme: {
     extend: {},
   },
   plugins: [],
-}
+};
