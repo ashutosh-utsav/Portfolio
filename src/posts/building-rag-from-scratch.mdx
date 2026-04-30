@@ -1,0 +1,110 @@
+---
+title: "Building a RAG Pipeline from Scratch: What the Tutorials Don't Tell You"
+date: "2026-03-20"
+description: "Retrieval-Augmented Generation looks clean in blog posts. In practice it's messier. Here's what I learned building one for fraud analysis and Q&A systems."
+tags: ["RAG", "LLM", "Backend"]
+readTime: "8 min read"
+---
+
+# Building a RAG Pipeline from Scratch: What the Tutorials Don't Tell You
+
+Every RAG tutorial shows the same diagram: user query → embed → retrieve → stuff into prompt → LLM → answer. It's clean, intuitive, and it works in the demo.
+
+Then you try it on real data and everything falls apart.
+
+I built RAG pipelines during my time at AmeyaaNXT — one for fraud analysis, one for general Q&A over internal documents. Here's what I actually learned.
+
+## The Tutorial Version
+
+The standard RAG loop looks like this:
+
+1. **Ingest**: chunk your documents, embed each chunk, store in a vector DB
+2. **Query**: embed the user's question, find the top-K nearest chunks
+3. **Generate**: paste those chunks into the LLM prompt, get an answer
+
+This works. If your data is clean, your questions are predictable, and your chunks are well-sized, you'll get good results. But almost none of those conditions hold in practice.
+
+## Problem 1: Chunking Is Harder Than It Looks
+
+The default advice is "chunk at 512 tokens with 50-token overlap." This is fine for Wikipedia articles. It's terrible for:
+
+- **Tabular data**: a 512-token chunk that cuts across a CSV table is meaningless to an LLM
+- **Code**: a function split across two chunks loses its context entirely
+- **Documents with headers**: the chunk that has the answer often doesn't have the section header that gives it meaning
+
+What actually works better:
+
+- **Semantic chunking**: split at natural boundaries (paragraphs, sections, function definitions) rather than fixed token counts
+- **Hierarchical chunking**: store both the section heading and the chunk content, embed them together
+- **Metadata injection**: prepend the document title and section name into every chunk before embedding
+
+The last one sounds obvious but it made a significant difference in retrieval quality for us.
+
+## Problem 2: Top-K Retrieval Fails More Than You Think
+
+Cosine similarity between an embedded query and embedded chunks is the backbone of RAG. It mostly works. But it fails in specific, predictable ways:
+
+**Vocabulary mismatch**: if your docs use "fraud transaction" and the user asks about "suspicious payment," the embeddings might not align even though they mean the same thing. Solution: use a model trained on your domain, or fine-tune.
+
+**Short queries vs long chunks**: a 5-word query embeds into a very different space than a 300-word document chunk. Asymmetric embeddings (like those from E5 or BGE) handle this better than symmetric ones.
+
+**Missing information**: sometimes the right answer simply isn't in the retrieved chunks. The LLM will hallucinate a plausible-sounding answer anyway. This is the most dangerous failure mode.
+
+The fix I found most reliable: **hybrid retrieval** — combine dense retrieval (embeddings) with sparse retrieval (BM25 keyword search), then rerank the merged results. It's more infrastructure, but it handles the vocabulary mismatch problem well.
+
+## Problem 3: The Prompt Is Where It Gets Weird
+
+Even with good chunks, how you structure the prompt matters a lot.
+
+Bad:
+```
+Context: [chunk1] [chunk2] [chunk3]
+Question: {query}
+Answer:
+```
+
+Better:
+```
+You are answering questions about [domain]. Use ONLY the provided context. If the context doesn't contain the answer, say "I don't know."
+
+Context:
+[1] {chunk1}
+[2] {chunk2}
+[3] {chunk3}
+
+Question: {query}
+Answer with citations (e.g., "According to [1]..."):
+```
+
+The `say "I don't know"` instruction is critical. Without it, LLMs will confabulate answers from their training data instead of the retrieved context. With it, they're much more honest about the limits of what was retrieved.
+
+Numbered sources and citation instructions also help — they push the model to be specific about where the answer came from.
+
+## Problem 4: Evaluation Is Underrated
+
+Most people build a RAG pipeline, test it with 5 questions manually, and call it done. This doesn't catch regressions.
+
+What you actually need is an eval set: a collection of (question, expected answer, source document) triples. Then you can measure:
+
+- **Retrieval recall**: did the right chunk show up in the top-K?
+- **Answer faithfulness**: does the generated answer contradict the retrieved context?
+- **Answer relevance**: does the answer actually address the question?
+
+Frameworks like **RAGAS** automate a lot of this using LLM-as-judge. It's not perfect but it's much better than vibes-based evaluation.
+
+## What I'd Do Differently
+
+If I were starting over:
+
+1. **Start with BM25 only**. It's surprisingly strong as a baseline and requires zero GPU.
+2. **Invest in chunking strategy early**. It affects everything downstream and is painful to change later.
+3. **Add evaluation before adding complexity**. Hybrid retrieval, reranking, and query rewriting all add value — but you can't tell by how much without a proper eval harness.
+4. **Log everything**. Every query, every retrieved chunk, every generated answer. You need this data to debug failures and improve the system.
+
+## The Bigger Picture
+
+RAG is still the right pattern for most LLM applications that need to work with private or up-to-date data. The alternatives — fine-tuning, long-context models — have their own trade-offs (cost, staleness, hallucination).
+
+But the gap between a demo RAG and a production RAG is real. The good news is that every problem has a known solution. The hard part is knowing which problem you actually have.
+
+Start simple, measure everything, and add complexity only when you can prove it helps.

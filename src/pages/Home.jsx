@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Github, ExternalLink, Sun, Moon, Mail, Linkedin, FileText, Code2, Terminal, Brain, Cloud } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Github, ExternalLink, Sun, Moon, Mail, Linkedin, FileText, Code2, Terminal, Brain, Cloud, Clock, Calendar, ArrowRight } from 'lucide-react';
 import { SiPython, SiMysql, SiGnubash, SiJavascript, SiHtml5, SiFlask, SiFastapi, SiVuedotjs, SiLinux, SiGit, SiRedis, SiPytorch, SiDocker } from 'react-icons/si';
 
 // --- DATA ---
@@ -115,7 +116,35 @@ const toolCategories = [
     }
 ];
 
+// --- BLOG POSTS ---
+const postModules = import.meta.glob('../posts/*.mdx', { eager: true });
+const blogPosts = Object.entries(postModules)
+    .map(([path, mod]) => ({
+        slug: path.replace('../posts/', '').replace('.mdx', ''),
+        ...mod.frontmatter,
+    }))
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+
 // --- REUSABLE COMPONENTS ---
+
+const BlogCard = ({ post, onNavigate }) => (
+    <article className="card blog-card" onClick={() => onNavigate(`/blog/${post.slug}`)} style={{ cursor: 'pointer' }}>
+        <div className="card-header">
+            <h3 className="card-title">{post.title}</h3>
+            <ArrowRight size={16} className="blog-card-arrow" />
+        </div>
+        <p className="card-desc">{post.description}</p>
+        <div className="blog-card-footer">
+            <div className="pills">
+                {post.tags?.map((tag, i) => <span key={i} className="pill">{tag}</span>)}
+            </div>
+            <div className="blog-card-meta">
+                <span><Calendar size={12} /> {new Date(post.date).toLocaleDateString('en-US', { month: 'short', year: 'numeric' })}</span>
+                <span><Clock size={12} /> {post.readTime}</span>
+            </div>
+        </div>
+    </article>
+);
 
 const ProjectCard = ({ project }) => (
   <article className="card">
@@ -191,8 +220,10 @@ const Home = () => {
         return true;
     });
     
-    const [activeTab, setActiveTab] = useState('Experience');
-  
+    const [searchParams] = useSearchParams();
+    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'Experience');
+    const navigate = useNavigate();
+
     useEffect(() => {
         if (darkMode) {
             document.documentElement.classList.add('dark');
@@ -202,14 +233,16 @@ const Home = () => {
         localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
 
-    const navTabs = ['Experience', 'Projects', 'Tools'];
-    
+    const navTabs = ['Experience', 'Projects', 'Tools', 'Blog'];
+
     const renderContent = () => {
         switch (activeTab) {
             case 'Experience':
                 return <div className="card-grid">{experiences.map((item, index) => <ExperienceItem key={index} item={item} />)}</div>;
             case 'Tools':
-                 return <div className="card-grid">{toolCategories.map((cat, index) => <ToolCategory key={index} category={cat} />)}</div>;
+                return <div className="card-grid">{toolCategories.map((cat, index) => <ToolCategory key={index} category={cat} />)}</div>;
+            case 'Blog':
+                return <div className="card-grid">{blogPosts.map((post, index) => <BlogCard key={index} post={post} onNavigate={navigate} />)}</div>;
             case 'Projects':
             default:
                 return <div className="card-grid">{projects.map((project, index) => <ProjectCard key={index} project={project} />)}</div>;
