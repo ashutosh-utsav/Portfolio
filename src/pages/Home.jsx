@@ -1,17 +1,39 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Github, ExternalLink, Sun, Moon, Mail, Linkedin, FileText, Code2, Terminal, Brain, Cloud, Clock, Calendar, ArrowRight } from 'lucide-react';
+import { Github, ExternalLink, Sun, Moon, Mail, Linkedin, FileText, Code2, Terminal, Brain, Cloud, Clock, Calendar, ArrowRight, Trophy, Medal, Award } from 'lucide-react';
 import { SiPython, SiMysql, SiGnubash, SiJavascript, SiHtml5, SiFlask, SiFastapi, SiVuedotjs, SiLinux, SiGit, SiRedis, SiPytorch, SiDocker } from 'react-icons/si';
 
 // --- DATA ---
 const personalInfo = {
   name: "Ashutosh Utsav",
-  bio: "AI/ML engineer working full time on voice AI systems — currently building voice embedding pipelines, speaker diarization, and backend infrastructure.",
+  education: "IIT Madras · BS Data Science & Programming · 2022–2025",
+  bio: "ML Engineer at YOYO AI building voice AI systems — speaker embeddings, diarization, and scalable audio backends. National BharatGen AI Hackathon winner. I like working on problems where the data is messy and the constraints are real.",
   email: "utsav.ashutosh@gmail.com",
   github: "https://github.com/ashutosh-utsav",
   linkedin: "https://linkedin.com/in/ashutosh-utsav",
   resume: "https://drive.google.com/file/d/1oGEdPFCGh2falpJvNa_IU7mMdLueRLOR/view?usp=sharing"
 };
+
+const achievements = [
+    {
+        icon: Trophy,
+        title: "BharatGen AI Hackathon — National Winner",
+        year: "2025",
+        description: "Won the national-level BharatGen AI Hackathon for building JanVaani — a voice-first citizen engagement platform with a multilingual AI assistant that automates grievance form submission.",
+    },
+    {
+        icon: Medal,
+        title: "Kaggle ML Competition — Top 3%",
+        year: "2024",
+        description: "Ranked in the top 3% out of thousands of participants in a machine learning competition, demonstrating strong applied ML and modelling skills.",
+    },
+    {
+        icon: Award,
+        title: "Hacksprint Hackathon — Runner-up",
+        year: "2024",
+        description: "Secured runner-up position for developing a sustainability-focused web application at the Hacksprint Hackathon.",
+    },
+];
 
 const projects = [
   {
@@ -116,6 +138,35 @@ const toolCategories = [
     }
 ];
 
+// --- FILMS ---
+const TMDB_KEY = import.meta.env.VITE_TMDB_API_KEY;
+const TMDB_IMG = 'https://image.tmdb.org/t/p/w342';
+
+const FILM_IDS = [
+  598826,  // Sardar Udham (2021)
+  41053,   // Pyaasa (1957)
+  191714,  // The Lunchbox (2013)
+  128207,  // Ship of Theseus (2012)
+  336203,  // Masaan (2015)
+  45316,   // Udaan (2010)
+  927547,  // All We Imagine as Light (2024)
+  838145,  // A Night of Knowing Nothing (2022)
+  541813,  // Bounded-Boundless (2008)
+  1016217, // While We Watched (2023)
+  408624,  // A Death in the Gunj (2016)
+  157336,  // Interstellar (2014)
+  575351,  // Kumbalangi Nights (2019)
+  962571,  // Joyland (2022)
+  21557,   // Hazaaron Khwaishein Aisi (2003)
+  1136423, // Meiyazhagan (2024)
+  786064,  // The Great Indian Kitchen (2021)
+  53767,   // Kaagaz Ke Phool (1959)
+  128206,  // Shahid (2013)
+  79731,   // Suraj Ka Satvan Ghoda (1992)
+  260669,  // Ram ke Naam / In the Name of God (1992)
+  687163, // Project hail mary (2026)
+];
+
 // --- BLOG POSTS ---
 const postModules = import.meta.glob('../posts/*.mdx', { eager: true });
 const blogPosts = Object.entries(postModules)
@@ -126,6 +177,87 @@ const blogPosts = Object.entries(postModules)
     .sort((a, b) => new Date(b.date) - new Date(a.date));
 
 // --- REUSABLE COMPONENTS ---
+
+const FilmSection = () => {
+    const [films, setFilms] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        Promise.all(
+            FILM_IDS.map(id =>
+                fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}&append_to_response=credits`)
+                    .then(r => r.json())
+                    .then(data => {
+                        const crew = data.credits?.crew || [];
+                        const director = crew.find(c => c.job === 'Director')?.name || '';
+                        const writer = crew.find(c =>
+                            ['Screenplay', 'Writer', 'Story', 'Novel'].includes(c.job)
+                        )?.name || '';
+                        return {
+                            id: data.id,
+                            title: data.title,
+                            year: data.release_date?.slice(0, 4) || '',
+                            poster: data.poster_path,
+                            director,
+                            writer,
+                        };
+                    })
+            )
+        ).then(setFilms).finally(() => setLoading(false));
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="film-grid">
+                {FILM_IDS.map(id => (
+                    <div key={id} className="film-card">
+                        <div className="film-poster-skeleton" />
+                        <div className="film-info-skeleton" />
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    return (
+        <div className="film-grid">
+            {films.map(film => (
+                <div key={film.id} className="film-card">
+                    <div className="film-poster-wrap">
+                        {film.poster
+                            ? <img src={`${TMDB_IMG}${film.poster}`} alt={film.title} className="film-poster" loading="lazy" />
+                            : <div className="film-poster-placeholder">{film.title}</div>
+                        }
+                    </div>
+                    <div className="film-info">
+                        <p className="film-title">{film.title}</p>
+                        <p className="film-year">{film.year}</p>
+                        {film.director && <p className="film-credit">Dir. {film.director}</p>}
+                        {film.writer && film.writer !== film.director && <p className="film-credit">Wri. {film.writer}</p>}
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+};
+
+const AchievementCard = ({ item }) => {
+    const Icon = item.icon;
+    return (
+        <article className="card achievement-card">
+            <div className="achievement-header">
+                <div className="achievement-icon-wrap">
+                    <Icon size={20} />
+                </div>
+                <div className="achievement-title-row">
+                    <h3 className="card-title">{item.title}</h3>
+                    <span className="pill">{item.year}</span>
+                </div>
+            </div>
+            <p className="card-desc">{item.description}</p>
+        </article>
+    );
+};
 
 const BlogCard = ({ post, onNavigate }) => (
     <article className="card blog-card" onClick={() => onNavigate(`/blog/${post.slug}`)} style={{ cursor: 'pointer' }}>
@@ -233,7 +365,7 @@ const Home = () => {
         localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
 
-    const navTabs = ['Experience', 'Projects', 'Tools', 'Blog'];
+    const navTabs = ['Experience', 'Projects', 'Tools', 'Achievements', 'Films', 'Blog'];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -241,6 +373,10 @@ const Home = () => {
                 return <div className="card-grid">{experiences.map((item, index) => <ExperienceItem key={index} item={item} />)}</div>;
             case 'Tools':
                 return <div className="card-grid">{toolCategories.map((cat, index) => <ToolCategory key={index} category={cat} />)}</div>;
+            case 'Achievements':
+                return <div className="card-grid">{achievements.map((item, index) => <AchievementCard key={index} item={item} />)}</div>;
+            case 'Films':
+                return <FilmSection />;
             case 'Blog':
                 return <div className="card-grid">{blogPosts.map((post, index) => <BlogCard key={index} post={post} onNavigate={navigate} />)}</div>;
             case 'Projects':
@@ -256,6 +392,7 @@ const Home = () => {
                 <div className="flex justify-between items-start">
                     <div className="flex-col">
                         <h1 className="title">Hey, I'm {personalInfo.name}</h1>
+                        <p className="education-line">{personalInfo.education}</p>
                         <a href={personalInfo.resume} target="_blank" rel="noopener noreferrer" className="btn-primary">
                             <FileText size={16} />
                             View Resume
