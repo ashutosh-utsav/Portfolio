@@ -315,9 +315,11 @@ const Home = () => {
         return true;
     });
     
-    const [searchParams] = useSearchParams();
-    const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'Experience');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const activeTab = searchParams.get('tab') || 'Experience';
     const navigate = useNavigate();
+
+    const setActiveTab = (tab) => setSearchParams({ tab });
 
     useEffect(() => {
         if (darkMode) {
