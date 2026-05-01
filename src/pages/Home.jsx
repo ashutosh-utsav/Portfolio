@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Github, ExternalLink, Sun, Moon, Mail, Linkedin, FileText, Code2, Terminal, Brain, Cloud, Clock, Calendar, ArrowRight, Trophy, Medal, Award } from 'lucide-react';
+import { Github, ExternalLink, Sun, Moon, Mail, Linkedin, FileText, Code2, Terminal, Brain, Cloud, Clock, Calendar, ArrowRight } from 'lucide-react';
 import { SiPython, SiMysql, SiGnubash, SiJavascript, SiHtml5, SiFlask, SiFastapi, SiVuedotjs, SiLinux, SiGit, SiRedis, SiPytorch, SiDocker } from 'react-icons/si';
 
 // --- DATA ---
@@ -14,26 +14,6 @@ const personalInfo = {
   resume: "https://drive.google.com/file/d/1oGEdPFCGh2falpJvNa_IU7mMdLueRLOR/view?usp=sharing"
 };
 
-const achievements = [
-    {
-        icon: Trophy,
-        title: "BharatGen AI Hackathon — National Winner",
-        year: "2025",
-        description: "Won the national-level BharatGen AI Hackathon for building JanVaani — a voice-first citizen engagement platform with a multilingual AI assistant that automates grievance form submission.",
-    },
-    {
-        icon: Medal,
-        title: "Kaggle ML Competition — Top 3%",
-        year: "2024",
-        description: "Ranked in the top 3% out of thousands of participants in a machine learning competition, demonstrating strong applied ML and modelling skills.",
-    },
-    {
-        icon: Award,
-        title: "Hacksprint Hackathon — Runner-up",
-        year: "2024",
-        description: "Secured runner-up position for developing a sustainability-focused web application at the Hacksprint Hackathon.",
-    },
-];
 
 const projects = [
   {
@@ -241,23 +221,6 @@ const FilmSection = () => {
     );
 };
 
-const AchievementCard = ({ item }) => {
-    const Icon = item.icon;
-    return (
-        <article className="card achievement-card">
-            <div className="achievement-header">
-                <div className="achievement-icon-wrap">
-                    <Icon size={20} />
-                </div>
-                <div className="achievement-title-row">
-                    <h3 className="card-title">{item.title}</h3>
-                    <span className="pill">{item.year}</span>
-                </div>
-            </div>
-            <p className="card-desc">{item.description}</p>
-        </article>
-    );
-};
 
 const BlogCard = ({ post, onNavigate }) => (
     <article className="card blog-card" onClick={() => onNavigate(`/blog/${post.slug}`)} style={{ cursor: 'pointer' }}>
@@ -365,7 +328,7 @@ const Home = () => {
         localStorage.setItem('theme', darkMode ? 'dark' : 'light');
     }, [darkMode]);
 
-    const navTabs = ['Experience', 'Projects', 'Tools', 'Achievements', 'Films', 'Blog'];
+    const navTabs = ['Experience', 'Projects', 'Tools', 'Films', 'Books', 'Blog'];
 
     const renderContent = () => {
         switch (activeTab) {
@@ -373,10 +336,16 @@ const Home = () => {
                 return <div className="card-grid">{experiences.map((item, index) => <ExperienceItem key={index} item={item} />)}</div>;
             case 'Tools':
                 return <div className="card-grid">{toolCategories.map((cat, index) => <ToolCategory key={index} category={cat} />)}</div>;
-            case 'Achievements':
-                return <div className="card-grid">{achievements.map((item, index) => <AchievementCard key={index} item={item} />)}</div>;
             case 'Films':
                 return <FilmSection />;
+            case 'Books':
+                return (
+                    <div className="coming-soon-wrap">
+                        <p className="coming-soon-emoji"></p>
+                        <p className="coming-soon-title">Coming soon... probably.</p>
+                        <p className="coming-soon-desc">I have a whole list of books I keep meaning to add here. I also have a whole list of books I keep meaning to read. We don't talk about either list.</p>
+                    </div>
+                );
             case 'Blog':
                 return <div className="card-grid">{blogPosts.map((post, index) => <BlogCard key={index} post={post} onNavigate={navigate} />)}</div>;
             case 'Projects':
