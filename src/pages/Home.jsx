@@ -7,7 +7,7 @@ import { SiPython, SiMysql, SiGnubash, SiJavascript, SiHtml5, SiFlask, SiFastapi
 const personalInfo = {
   name: "Ashutosh Utsav",
   education: "IIT Madras · BS Data Science & Programming · 2022–2025",
-  bio: "ML Engineer at YOYO AI building voice AI systems — speaker embeddings, diarization, and scalable audio backends. National BharatGen AI Hackathon winner. I like working on problems where the data is messy and the constraints are real.",
+  bio: "ML Engineer at YOYO AI building voice AI systems — speaker embeddings, diarization, and scalable audio backends. National level BharatGen AI Hackathon winner. I like to work on end-to-end pipelines — from speech recognition and voice interfaces to scalable backend infrastructure powering AI applications. I also have a soft spot for films and books, which you can find in the sections below. Always open to connecting with fellow tech enthusiasts, cinephiles, or anyone curious about AI and its real-world applications.",
   email: "utsav.ashutosh@gmail.com",
   github: "https://github.com/ashutosh-utsav",
   linkedin: "https://linkedin.com/in/ashutosh-utsav",
