@@ -145,6 +145,14 @@ const FILM_IDS = [
   79731,   // Suraj Ka Satvan Ghoda (1992)
   260669,  // Ram ke Naam / In the Name of God (1992)
   687163, // Project hail mary (2026)
+  1007695, // Pokhar ke dunu paar
+  475250, // Omerta
+  668435, // Thappad
+  411010, // An Insignificant Man
+  666277, // Past Lives (2023)
+  14705, // Omkara (2006)
+  280795, // Haidaar (2021)
+  
 ];
 
 // --- BLOG POSTS ---
