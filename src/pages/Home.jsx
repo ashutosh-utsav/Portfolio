@@ -152,6 +152,18 @@ const FILM_IDS = [
   666277, // Past Lives (2023)
   14705, // Omkara (2006)
   280795, // Haidaar (2021)
+  269981, // Twelve angry men (1957)
+  432011, // Super Deluxe (2022)
+  1168104, // 
+  1168102, 
+  438631, // Dune
+  693134, // Dune Part 2
+  290815, // Court
+  518497, // Sir
+  9693, // Children of men (2006)
+  576928, // Asuran
+  205017, // Lootera
+  
 
 ];
 
