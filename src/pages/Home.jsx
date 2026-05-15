@@ -134,7 +134,7 @@ const FILM_IDS = [
   541813,  // Bounded-Boundless (2008)
   1016217, // While We Watched (2023)
   408624,  // A Death in the Gunj (2016)
-  157336,  // Interstellar (2014)
+//   157336,  // Interstellar (2014)
   575351,  // Kumbalangi Nights (2019)
   962571,  // Joyland (2022)
   21557,   // Hazaaron Khwaishein Aisi (2003)
@@ -144,12 +144,12 @@ const FILM_IDS = [
   128206,  // Shahid (2013)
   79731,   // Suraj Ka Satvan Ghoda (1992)
   260669,  // Ram ke Naam / In the Name of God (1992)
-  687163, // Project hail mary (2026)
+//   687163, // Project hail mary (2026)
   1007695, // Pokhar ke dunu paar
   475250, // Omerta
-  668435, // Thappad
-  411010, // An Insignificant Man
-  666277, // Past Lives (2023)
+//   668435, // Thappad
+//   411010, // An Insignificant Man
+//   666277, // Past Lives (2023)
   14705, // Omkara (2006)
   280795, // Haidaar (2021)
   269981, // Twelve angry men (1957)
@@ -183,7 +183,7 @@ const FilmSection = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        Promise.all(
+        Promise.allSettled(
             FILM_IDS.map(id =>
                 fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${TMDB_KEY}&append_to_response=credits`)
                     .then(r => r.json())
@@ -203,7 +203,12 @@ const FilmSection = () => {
                         };
                     })
             )
-        ).then(setFilms).finally(() => setLoading(false));
+        ).then(results => {
+            setFilms(results
+                .filter(r => r.status === 'fulfilled')
+                .map(r => r.value)
+            );
+        }).finally(() => setLoading(false));
     }, []);
 
     if (loading) {
